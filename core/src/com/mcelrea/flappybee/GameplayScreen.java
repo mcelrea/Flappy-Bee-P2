@@ -1,18 +1,18 @@
 package com.mcelrea.flappybee;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/**
- * Created by mcelrea on 1/18/2017.
- */
 public class GameplayScreen implements Screen {
 
     public static final float WORLD_WIDTH = 480;
@@ -22,9 +22,8 @@ public class GameplayScreen implements Screen {
     private Camera camera; //the players view of the world
     private Viewport viewport; //control the view of the world
     private Bee bee;
-    private static final float DIVE_ACCEL = 0.3f;
-    private float ySpeed = 0;
-
+    private Array<Flower> flowers = new Array<Flower>();
+    private float GAP_BETWEEN_FLOWERS = 200f;
 
     public GameplayScreen(MyGdxGame myGdxGame) {
     }
@@ -45,10 +44,13 @@ public class GameplayScreen implements Screen {
     public void render(float delta) {
         clearScreen();
 
+        update(delta);
+
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
         //all graphics drawing goes here
         batch.begin();
+        bee.draw(batch);
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.projection);
@@ -56,7 +58,59 @@ public class GameplayScreen implements Screen {
         //all shape drawing goes here
         shapeRenderer.begin();
         bee.drawDebug(shapeRenderer);
+        for(int i=0; i < flowers.size; i++) {
+            flowers.get(i).drawDebug(shapeRenderer);
+        }
         shapeRenderer.end();
+    }
+
+    public void createNewFlower() {
+        Flower flower = new Flower();
+        flower.setPosition(WORLD_WIDTH + 33);
+        flowers.add(flower);
+    }
+
+    public void checkIfNewFlowerIsNeeded() {
+        //no flowers in the game
+        if(flowers.size == 0) {
+            createNewFlower();
+        }
+        else { //if a flower is needed
+            Flower flower = flowers.get(flowers.size-1);
+            if(flower.getX() < WORLD_WIDTH - GAP_BETWEEN_FLOWERS) {
+                createNewFlower();
+            }
+        }
+    }
+
+    public void removeFlowersIfPassed() {
+        if(flowers.size > 0) {
+            Flower firstFlower = flowers.first();
+            if(firstFlower.getX() < -33) {
+                flowers.removeValue(firstFlower,true);
+            }
+        }
+    }
+
+    public void keepBeeOnScreen() {
+        bee.setPosition(bee.getX(),
+                MathUtils.clamp(bee.getY(),0,WORLD_HEIGHT));
+    }
+
+    private void update(float delta) {
+        //bee stuff
+        bee.update();
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            bee.flyUp();
+        }
+        keepBeeOnScreen();
+
+        //flower stuff
+        for(int i=0; i < flowers.size; i++) {
+            flowers.get(i).update(delta);
+        }
+        checkIfNewFlowerIsNeeded();
+        removeFlowersIfPassed();
     }
 
     private void clearScreen() {
