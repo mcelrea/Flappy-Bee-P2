@@ -1,5 +1,7 @@
 package com.mcelrea.flappybee;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
@@ -18,6 +20,8 @@ public class Flower {
     private static final float GAP = 225f;
     private static final float MAX_SPEED_PER_SECOND = 100f;
     private static final float HEIGHT_OFFSET = -400f;
+    private Texture flowerImage;
+    private Texture stemImage;
 
     private float x = 0;
     private float y = 0;
@@ -38,6 +42,9 @@ public class Flower {
         ceilingCollisionCircle = new Circle(x+COLLISION_RECT_WIDTH/2,
                 ceilingCollisionRectangle.y,
                 COLLISION_CIRCLE_RADIUS);
+
+        flowerImage = new Texture("sun-flower-th.png");
+        stemImage = new Texture("stem.png");
     }
 
     public void update(float delta) {
@@ -78,6 +85,15 @@ public class Flower {
                 ceilingCollisionRectangle.width, ceilingCollisionRectangle.height);
         shapeRenderer.circle(ceilingCollisionCircle.x, ceilingCollisionCircle.y,
                 ceilingCollisionCircle.radius);
+    }
+
+    public void draw(SpriteBatch batch) {
+        batch.draw(flowerImage,
+                floorCollisionCircle.x - floorCollisionCircle.radius - COLLISION_RECT_WIDTH,
+                floorCollisionCircle.y - floorCollisionCircle.radius - COLLISION_RECT_WIDTH);
+        batch.draw(flowerImage,
+                ceilingCollisionCircle.x - floorCollisionCircle.radius - COLLISION_RECT_WIDTH,
+                ceilingCollisionCircle.y - floorCollisionCircle.radius - COLLISION_RECT_WIDTH);
     }
 
     public float getX() {

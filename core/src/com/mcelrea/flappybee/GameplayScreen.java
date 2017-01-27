@@ -54,6 +54,9 @@ public class GameplayScreen implements Screen {
         //all graphics drawing goes here
         batch.begin();
         bee.draw(batch);
+        for(int i=0; i < flowers.size; i++) {
+            flowers.get(i).draw(batch);
+        }
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.projection);
