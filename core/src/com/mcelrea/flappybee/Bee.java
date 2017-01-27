@@ -64,4 +64,8 @@ public class Bee {
     public float getY() {
         return y;
     }
+
+    public Circle getCollisionCircle() {
+        return collisionCircle;
+    }
 }

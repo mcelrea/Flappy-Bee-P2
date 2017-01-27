@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,6 +25,8 @@ public class GameplayScreen implements Screen {
     private Bee bee;
     private Array<Flower> flowers = new Array<Flower>();
     private float GAP_BETWEEN_FLOWERS = 200f;
+    public static int score = 0;
+    BitmapFont font;
 
     public GameplayScreen(MyGdxGame myGdxGame) {
     }
@@ -62,6 +65,15 @@ public class GameplayScreen implements Screen {
             flowers.get(i).drawDebug(shapeRenderer);
         }
         shapeRenderer.end();
+    }
+
+    public boolean isBeeColliding() {
+        for(int i=0; i < flowers.size; i++) {
+            if(flowers.get(i).isBeeColliding(bee)) {
+                return true;//he is hitting a flower
+            }
+        }
+        return false;//not hitting any flowers
     }
 
     public void createNewFlower() {
@@ -111,6 +123,17 @@ public class GameplayScreen implements Screen {
         }
         checkIfNewFlowerIsNeeded();
         removeFlowersIfPassed();
+
+        //collision stuff
+        if(isBeeColliding()) {
+            restart();
+        }
+    }
+
+    private void restart() {
+        score = 0;
+        flowers.clear();
+        bee.setPosition(100,WORLD_HEIGHT/2);
     }
 
     private void clearScreen() {
