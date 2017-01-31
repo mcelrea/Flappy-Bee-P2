@@ -22,7 +22,7 @@ public class Bee {
         image = new Texture("Bee_normal.png");
     }
 
-    public void resetBeeSpeed() {
+    public void resetBeeSpeed() { //234324
         ySpeed = 0;
     }
 

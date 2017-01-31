@@ -93,7 +93,7 @@ public class GameplayScreen implements Screen {
                 flower.setPointClaimed(true);
             }
         }
-    }
+    }//:)
 
     public void createNewFlower() {
         Flower flower = new Flower();
