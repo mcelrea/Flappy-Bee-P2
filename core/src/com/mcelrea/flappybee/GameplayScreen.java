@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -27,6 +28,7 @@ public class GameplayScreen implements Screen {
     private float GAP_BETWEEN_FLOWERS = 200f;
     public static int score = 0;
     BitmapFont font;
+    private Texture backgroundImage;
 
     public GameplayScreen(MyGdxGame myGdxGame) {
     }
@@ -41,6 +43,8 @@ public class GameplayScreen implements Screen {
         shapeRenderer.setAutoShapeType(true);
         batch = new SpriteBatch();
         bee = new Bee();
+        backgroundImage = new Texture("back.jpg");
+        font = new BitmapFont();
     }
 
     @Override
@@ -53,20 +57,22 @@ public class GameplayScreen implements Screen {
         batch.setTransformMatrix(camera.view);
         //all graphics drawing goes here
         batch.begin();
+        batch.draw(backgroundImage,0,0);
         bee.draw(batch);
         for(int i=0; i < flowers.size; i++) {
             flowers.get(i).draw(batch);
         }
+        font.draw(batch, "Score: " + score, 215, 600);
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.projection);
         shapeRenderer.setTransformMatrix(camera.view);
         //all shape drawing goes here
         shapeRenderer.begin();
-        bee.drawDebug(shapeRenderer);
-        for(int i=0; i < flowers.size; i++) {
-            flowers.get(i).drawDebug(shapeRenderer);
-        }
+        //bee.drawDebug(shapeRenderer);
+        //for(int i=0; i < flowers.size; i++) {
+        //    flowers.get(i).drawDebug(shapeRenderer);
+        //}
         shapeRenderer.end();
     }
 
@@ -77,6 +83,16 @@ public class GameplayScreen implements Screen {
             }
         }
         return false;//not hitting any flowers
+    }
+
+    public void updateScore() {
+        if(flowers.size > 0) {
+            Flower flower = flowers.first();
+            if (flower.getX() < bee.getX() && !flower.isPointClaimed()) {
+                score++; //add one to score
+                flower.setPointClaimed(true);
+            }
+        }
     }
 
     public void createNewFlower() {
@@ -125,18 +141,21 @@ public class GameplayScreen implements Screen {
             flowers.get(i).update(delta);
         }
         checkIfNewFlowerIsNeeded();
-        removeFlowersIfPassed();
+        removeFlowersIfPassed() ;
 
         //collision stuff
         if(isBeeColliding()) {
             restart();
         }
+
+        updateScore();
     }
 
     private void restart() {
         score = 0;
         flowers.clear();
         bee.setPosition(100,WORLD_HEIGHT/2);
+        bee.resetBeeSpeed();
     }
 
     private void clearScreen() {

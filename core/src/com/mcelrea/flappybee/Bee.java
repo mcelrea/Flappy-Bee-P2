@@ -22,6 +22,10 @@ public class Bee {
         image = new Texture("Bee_normal.png");
     }
 
+    public void resetBeeSpeed() {
+        ySpeed = 0;
+    }
+
     public void update() {
         ySpeed -= DIVE_ACCEL;
         setPosition(x, y+ySpeed);

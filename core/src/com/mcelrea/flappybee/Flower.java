@@ -22,6 +22,7 @@ public class Flower {
     private static final float HEIGHT_OFFSET = -400f;
     private Texture flowerImage;
     private Texture stemImage;
+    private boolean pointClaimed = false;
 
     private float x = 0;
     private float y = 0;
@@ -88,6 +89,14 @@ public class Flower {
     }
 
     public void draw(SpriteBatch batch) {
+        batch.draw(stemImage,
+                floorCollisionRectangle.x,
+                floorCollisionRectangle.y);
+        batch.draw(stemImage,
+                ceilingCollisionRectangle.x,
+                ceilingCollisionRectangle.y);
+
+
         batch.draw(flowerImage,
                 floorCollisionCircle.x - floorCollisionCircle.radius - COLLISION_RECT_WIDTH,
                 floorCollisionCircle.y - floorCollisionCircle.radius - COLLISION_RECT_WIDTH);
@@ -110,5 +119,13 @@ public class Flower {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    public boolean isPointClaimed() {
+        return pointClaimed;
+    }
+
+    public void setPointClaimed(boolean pointClaimed) {
+        this.pointClaimed = pointClaimed;
     }
 }
